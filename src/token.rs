@@ -18,7 +18,7 @@ pub struct TokenRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub permissions: Option<Permissions>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub repositories: Option<Vec<String>>,
+    pub repositories: Option<Vec<u32>>,
 }
 
 pub(crate) struct GitHubInstallationToken {
