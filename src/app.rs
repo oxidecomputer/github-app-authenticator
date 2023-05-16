@@ -10,6 +10,7 @@ use jsonwebtoken::{Header, Algorithm, EncodingKey};
 use reqwest::Client;
 use serde::Serialize;
 use std::{fmt::Debug, ops::Add};
+use tracing::debug;
 
 use crate::{GitHubInstallationAuthenticator, GitHubAuthenticatorError};
 
@@ -42,6 +43,8 @@ impl GitHubAppAuthenticator {
         key: Vec<u8>,
         user_agent: HeaderValue,
     ) -> Self {
+        debug!(?app_id, ?user_agent, "Creating app authenticator");
+
         Self {
             inner: Client::new(),
             app_id,

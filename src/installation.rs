@@ -50,9 +50,10 @@ impl GitHubInstallationAuthenticator {
         &self,
         request: &TokenRequest,
     ) -> Result<GitHubInstallationTokenResponse, GitHubAuthenticatorError> {
-        tracing::info!("Requesting installation access token");
+        tracing::info!(?request, url = ?self.installation_api_endpoint, "Requesting installation access token");
 
         let jwt = self.app.generate_jwt(Duration::seconds(60))?;
+
         let response = self
             .inner
             .post(&self.installation_api_endpoint)
@@ -75,10 +76,12 @@ impl GitHubInstallationAuthenticator {
 
             Ok(token)
         } else {
-            tracing::error!(status = ?response.status(), "Failed to request installation access token");
-            Err(GitHubAuthenticatorError::InstallationRequestFailed(
-                response.status(),
-            ))
+            let status = response.status();
+            let body = response.text().await?;
+
+            tracing::info!(?status, ?body, "Failed to request installation access token");
+
+            Err(GitHubAuthenticatorError::InstallationRequestFailed(status))
         }
     }
 }
