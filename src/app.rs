@@ -66,25 +66,8 @@ impl GitHubAppAuthenticator {
         self
     }
 
-    /// Generate an installation authenticator. Each installation authenticator receives its own
-    /// copy of the app authenticator. Internal JWT credentials are not shared are not shared across
-    /// installation authenticators.
-    pub fn installation_authenticator(&self, installation_id: u32) -> GitHubInstallationAuthenticator {
-        GitHubInstallationAuthenticator::new(self.clone(), installation_id)
-    }
-
-    // Get the user agent header.
-    pub(crate) fn user_agent(&self) -> HeaderValue {
-        self.user_agent.clone()
-    }
-
-    // Get the base API endpoint.
-    pub(crate) fn base_endpoint(&self) -> &str {
-        &self.base_endpoint
-    }
-
-    // Generate a new JWT for use in requesting new access tokens.
-    pub(crate) fn generate_jwt(&self, duration: Duration) -> Result<String, GitHubAuthenticatorError> {
+    /// Generate a new JWT for calling GitHub App endpoints.
+    pub fn generate_jwt(&self, duration: Duration) -> Result<String, GitHubAuthenticatorError> {
         let claims = GitHubAppClaims {
             iat: Utc::now().timestamp(),
             exp: Utc::now().add(duration).timestamp(),
@@ -103,6 +86,23 @@ impl GitHubAppAuthenticator {
             tracing::error!(?claims, ?err, "Failed to generate authentication JWT");
             GitHubAuthenticatorError::FailedToGenerateJwt(err)
         })
+    }
+
+    /// Generate an installation authenticator. Each installation authenticator receives its own
+    /// copy of the app authenticator. Internal JWT credentials are not shared are not shared across
+    /// installation authenticators.
+    pub fn installation_authenticator(&self, installation_id: u32) -> GitHubInstallationAuthenticator {
+        GitHubInstallationAuthenticator::new(self.clone(), installation_id)
+    }
+
+    // Get the user agent header.
+    pub(crate) fn user_agent(&self) -> HeaderValue {
+        self.user_agent.clone()
+    }
+
+    // Get the base API endpoint.
+    pub(crate) fn base_endpoint(&self) -> &str {
+        &self.base_endpoint
     }
 }
 
