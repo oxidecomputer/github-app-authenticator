@@ -96,7 +96,7 @@ impl GitHubAppAuthenticator {
     }
 
     // Get the user agent header.
-    pub(crate) fn user_agent(&self) -> HeaderValue {
+    pub fn user_agent(&self) -> HeaderValue {
         self.user_agent.clone()
     }
 
